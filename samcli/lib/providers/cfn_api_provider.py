@@ -336,7 +336,7 @@ class CfnApiProvider(CfnBaseApiProvider):
 
         function_name = self._get_integration_function_name(integration)
         if function_name is None:
-            function_name = "".join([x.title() for x in resource_path.split("/")]) + method.title()
+            function_name = "".join([x.title() for x in resource_path.split("/")]).replace("-", "") + method.title()
 
         routes = Route(
             methods=[method],
