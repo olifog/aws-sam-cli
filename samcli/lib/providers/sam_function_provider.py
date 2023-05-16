@@ -513,6 +513,10 @@ class SamFunctionProvider(SamBaseProvider):
         if locate_layer_nested and stacks and function_id:
             # The layer can be a parameter pass from parent stack, we need to locate to where the
             # layer is actually defined
+            for key in stack.template_dict.get('Resources', {}).keys():
+                if key[:-8] == function_id:
+                    function_id = key
+                    break
             func_template = stack.template_dict.get("Resources", {}).get(function_id, {})
             a_list_of_layers = func_template.get("Properties", {}).get("Layers", [])
             for layer in a_list_of_layers:
