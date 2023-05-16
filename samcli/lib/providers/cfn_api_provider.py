@@ -1,6 +1,7 @@
 """Parses SAM given a template"""
 import logging
 from typing import Any, Dict, List, Optional, Tuple, cast
+from collections import OrderedDict
 
 from samcli.commands.local.cli_common.user_exceptions import InvalidSamTemplateException
 from samcli.commands.local.lib.swagger.integration_uri import LambdaUri
@@ -65,6 +66,11 @@ class CfnApiProvider(CfnBaseApiProvider):
             Optional working directory with respect to which we will resolve relative path to Swagger file
         """
 
+        total_resources = OrderedDict()
+
+        for stack in stacks:
+            total_resources.update(stack.resources)
+
         for stack in stacks:
             resources = stack.resources
             for logical_id, resource in resources.items():
@@ -76,7 +82,7 @@ class CfnApiProvider(CfnBaseApiProvider):
                     self._extract_cloud_formation_stage(resources, resource, collector)
 
                 if resource_type == AWS_APIGATEWAY_METHOD:
-                    self._extract_cloud_formation_method(stack.stack_path, resources, logical_id, resource, collector)
+                    self._extract_cloud_formation_method(stack.stack_path, total_resources, logical_id, resource, collector)
 
                 if resource_type == AWS_APIGATEWAY_AUTHORIZER:
                     self._extract_cloud_formation_authorizer(logical_id, resource, collector)
@@ -328,9 +334,13 @@ class CfnApiProvider(CfnBaseApiProvider):
 
         authorizer_name = properties.get(CfnApiProvider._METHOD_AUTHORIZER_ID)
 
+        function_name = self._get_integration_function_name(integration)
+        if function_name is None:
+            function_name = "".join([x.title() for x in resource_path.split("/")]) + method.title()
+
         routes = Route(
             methods=[method],
-            function_name=self._get_integration_function_name(integration),
+            function_name=function_name,
             path=resource_path,
             operation_name=operation_name,
             stack_path=stack_path,

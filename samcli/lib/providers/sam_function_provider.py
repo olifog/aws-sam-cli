@@ -40,7 +40,7 @@ class SamFunctionProvider(SamBaseProvider):
         stacks: List[Stack],
         use_raw_codeuri: bool = False,
         ignore_code_extraction_warnings: bool = False,
-        locate_layer_nested: bool = False,
+        locate_layer_nested: bool = True,
     ) -> None:
         """
         Initialize the class with SAM template data. The SAM template passed to this provider is assumed
