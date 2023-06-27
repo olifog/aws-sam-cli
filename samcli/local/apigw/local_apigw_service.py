@@ -5,7 +5,7 @@ import json
 import logging
 from datetime import datetime
 from io import BytesIO
-from time import time
+from time import time, sleep
 from typing import Any, Dict, List, Optional
 
 from flask import Flask, Request, request
@@ -709,19 +709,27 @@ class LocalApigwService(BaseLocalService):
                 return auth_service_error
 
         endpoint_service_error = None
-        try:
-            # invoke the route's Lambda function
-            lambda_response = self._invoke_lambda_function(route.function_name, route_lambda_event)
-        except FunctionNotFound:
-            endpoint_service_error = ServiceErrorResponses.lambda_not_found_response()
-        except UnsupportedInlineCodeError:
-            endpoint_service_error = ServiceErrorResponses.not_implemented_locally(
-                "Inline code is not supported for sam local commands. Please write your code in a separate file."
-            )
+        tries = 0
+        lambda_response = ""
 
-        if endpoint_service_error:
-            return endpoint_service_error
+        while lambda_response == "" and tries < 10:
+            try:
+                # invoke the route's Lambda function
+                lambda_response = self._invoke_lambda_function(route.function_name, route_lambda_event)
+                tries += 1
+            except FunctionNotFound:
+                endpoint_service_error = ServiceErrorResponses.lambda_not_found_response()
+            except UnsupportedInlineCodeError:
+                endpoint_service_error = ServiceErrorResponses.not_implemented_locally(
+                    "Inline code is not supported for sam local commands. Please write your code in a separate file."
+                )
 
+            if endpoint_service_error:
+                return endpoint_service_error
+            
+            if lambda_response == "":
+                sleep(0.25)
+        
         try:
             if route.event_type == Route.HTTP and (
                 not route.payload_format_version or route.payload_format_version == "2.0"
