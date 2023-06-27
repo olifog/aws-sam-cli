@@ -24,7 +24,7 @@ RUNTIME_DEP_TEMPLATE_MAPPING = {
     ],
     "ruby": [
         {
-            "runtimes": ["ruby2.7"],
+            "runtimes": ["ruby3.2", "ruby2.7"],
             "dependency_manager": "bundler",
             "init_location": os.path.join(_templates, "cookiecutter-aws-sam-hello-ruby"),
             "build": True,
@@ -40,7 +40,7 @@ RUNTIME_DEP_TEMPLATE_MAPPING = {
     ],
     "dotnet": [
         {
-            "runtimes": ["dotnet6", "dotnetcore3.1"],
+            "runtimes": ["dotnet6"],
             "dependency_manager": "cli-package",
             "init_location": os.path.join(_templates, "cookiecutter-aws-sam-hello-dotnet"),
             "build": True,
@@ -96,9 +96,8 @@ SUPPORTED_DEP_MANAGERS: List[str] = list(
 # When adding new Lambda runtimes, please update SAM_RUNTIME_TO_SCHEMAS_CODE_LANG_MAPPING
 # Runtimes are ordered in alphabetical fashion with reverse version order (latest versions first)
 INIT_RUNTIMES = [
-    # dotnetcore runtimes in descending order
+    # dotnet runtimes in descending order
     "dotnet6",
-    "dotnetcore3.1",
     "go1.x",
     # java runtimes in descending order
     "java17",
@@ -119,13 +118,13 @@ INIT_RUNTIMES = [
     "python3.8",
     "python3.7",
     # ruby runtimes in descending order
+    "ruby3.2",
     "ruby2.7",
 ]
 
 
 LAMBDA_IMAGES_RUNTIMES_MAP = {
     "dotnet6": "amazon/dotnet6-base",
-    "dotnetcore3.1": "amazon/dotnetcore3.1-base",
     "go1.x": "amazon/go1.x-base",
     "go (provided.al2)": "amazon/go-provided.al2-base",
     "java17": "amazon/java17-base",
@@ -140,6 +139,7 @@ LAMBDA_IMAGES_RUNTIMES_MAP = {
     "python3.9": "amazon/python3.9-base",
     "python3.8": "amazon/python3.8-base",
     "python3.7": "amazon/python3.7-base",
+    "ruby3.2": "amazon/ruby3.2-base",
     "ruby2.7": "amazon/ruby2.7-base",
 }
 
@@ -156,7 +156,7 @@ SAM_RUNTIME_TO_SCHEMAS_CODE_LANG_MAPPING = {
     "python3.8": "Python36",
     "python3.9": "Python36",
     "python3.10": "Python36",
-    "dotnet6": "dotnetcore3.1",
+    "dotnet6": "dotnet6",
     "go1.x": "Go1",
 }
 
